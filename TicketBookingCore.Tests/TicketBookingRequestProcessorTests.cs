@@ -1,60 +1,79 @@
+using Moq;
+
 namespace TicketBookingCore.Tests
 {
     public class TicketBookingRequestProcessorTests
     {
+        private readonly Mock<ITicketBookingRepository> _ticketBookingRepositoryMock;
         private readonly TicketBookingRequestProcessor _processor;
         public TicketBookingRequestProcessorTests()
         {
-            _processor = new TicketBookingRequestProcessor();
+            _ticketBookingRepositoryMock = new Mock<ITicketBookingRepository>();
+            _processor = new TicketBookingRequestProcessor(_ticketBookingRepositoryMock.Object);
         }
+
         [Fact]
-        public void ShouldReturnTicketBookingResultWithRequestValues()
+        public void ShouldReturnTicketBookningResultWithRequestValues()
         {
-            //Arrange del i unit test
-           
+            // Arrange
+
             var request = new TicketBookingRequest
             {
-                FirstName = "Linnea",
-                LastName = "Schilström",
-                Email = "Linnea@hotmail.com",
-                Personnummer = "19950112"
+                FirstName = "Nevena",
+                LastName = "Kicanovic",
+                Email = "nevena@gmail.com"
             };
 
-            // Del 2 Act
-            //Andropa någon slagt booknings request
-            //Book = klass
+            // Act
             TicketBookingResponse response = _processor.Book(request);
 
-            //Del 3 Assert
-            //Kolla samma egenskaper med equal
-            Assert.NotNull(response); //tillåter inte null värde
-            //Kolla egenskaper
+            // Assert
+            Assert.NotNull(response);
             Assert.Equal(request.FirstName, response.FirstName);
             Assert.Equal(request.LastName, response.LastName);
             Assert.Equal(request.Email, response.Email);
-            Assert.Equal(request.Personnummer, response.Personnummer);
-
-           
         }
         [Fact]
-
-        public void ShouldThrowExceptionWhenRequestIsNull()
+        public void ShouldThrowExceptionIfRequestIsNull()
         {
-            //Arrange Hanterar
-            var processor = new TicketBookingRequestProcessor();
-            //Act kommer retrunera om man skickar in objektet som är null - retrunerar argument
-            var exeption = Assert.Throws<ArgumentNullException>(() => _processor.Book(null));
+            // Act
+            var exception = Assert.Throws<ArgumentNullException>(() => _processor.Book(null));
 
             //Assert
-            Assert.Equal("request", exeption.ParamName);
-            //Kontrolerar med parameter request
-
+            Assert.Equal("request", exception.ParamName);
         }
-        //kör test resulterar i error eftersom book metod är tom
-        //Lägg till mer kod inför nästa test
 
+        /// <summary>
+        /// This test will fail because the method is not implemented yet.
+        /// </summary>
+        [Fact]
+        public void ShouldSaveToDatabase()
+        {
+            // Arrange
+            TicketBooking savedTicketBooking = null;
+
+            // Setup the Save method to capture the saved ticket booking
+            _ticketBookingRepositoryMock.Setup(x => x.Save(It.IsAny<TicketBooking>()))
+            .Callback<TicketBooking>((ticketBooking) =>
+            {
+                savedTicketBooking = ticketBooking;
+            });
+
+            var request = new TicketBookingRequest
+            {
+                FirstName = "Milena",
+                LastName = "Avramovic",
+                Email = "milenaavramovic@gmail.com"
+            };
+
+            // Act
+            TicketBookingResponse response = _processor.Book(request);
+
+            // Assert
+            Assert.NotNull(savedTicketBooking);
+            Assert.Equal(request.FirstName, savedTicketBooking.FirstName);
+            Assert.Equal(request.LastName, savedTicketBooking.LastName);
+            Assert.Equal(request.Email, savedTicketBooking.Email);
+        }
     }
 }
-
-//Referarar till TicketBookingCore projekt
-//justerar tester så de klarar drive kraven?
