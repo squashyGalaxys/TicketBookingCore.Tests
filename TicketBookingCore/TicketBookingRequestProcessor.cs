@@ -15,26 +15,20 @@
                 throw new ArgumentNullException(nameof(request));
             }
 
-            //Skapa ny ticketbooking, 
-            var ticketBooking = new TicketBooking
-                {
-                    FirstName = request.FirstName,
-                    LastName = request.LastName,
-                    Email = request.Email,
-                };
+            _ticketBookingRepository.Save(Create<TicketBooking>(request));
 
-            // Anropa
-            _ticketBookingRepository.Save(ticketBooking);
+            return Create<TicketBookingResponse>(request);
+        }
 
-            //refractor för att returnera en ny TicketBookingResponse
-            return new TicketBookingResponse
+        private static T Create<T>(TicketBookingRequest request) where T : TicketBookingBase, new()
+        {
+            return new T
             {
                 FirstName = request.FirstName,
                 LastName = request.LastName,
                 Email = request.Email
-                
             };
-            
+
         }
     }
 }

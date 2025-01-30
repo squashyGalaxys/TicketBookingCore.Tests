@@ -12,7 +12,13 @@ namespace TicketBookingCore.Tests
         {
             _ticketBookingRepositoryMock = new Mock<ITicketBookingRepository>();
             _processor = new TicketBookingRequestProcessor(_ticketBookingRepositoryMock.Object);
-            _request = new TicketBookingRequest();
+            _request = new TicketBookingRequest
+            {
+            FirstName = "Joakim",
+            LastName = "Banan",
+            Email  = "test@test.com"
+
+            };
         }
 
         [Fact]
@@ -53,16 +59,17 @@ namespace TicketBookingCore.Tests
                 savedTicketBooking = ticketBooking;
             });
 
-           
-
-            // Act
-            TicketBookingResponse response = _processor.Book(_request);
-
+            // Act 
+            _processor.Book(_request);
+            /// Verify that the Save method was called once 
+            _ticketBookingRepositoryMock.Verify(x => x.Save(It.IsAny<TicketBooking>()),
+        Times.Once);
+            
             // Assert
             Assert.NotNull(savedTicketBooking);
-            Assert.Equal(response.FirstName, savedTicketBooking.FirstName);
-            Assert.Equal(response.LastName, savedTicketBooking.LastName);
-            Assert.Equal(response.Email, savedTicketBooking.Email);
+            Assert.Equal(_request.FirstName, savedTicketBooking.FirstName);
+            Assert.Equal(_request.LastName, savedTicketBooking.LastName);
+            Assert.Equal(_request.Email, savedTicketBooking.Email);
         }
     }
 }
