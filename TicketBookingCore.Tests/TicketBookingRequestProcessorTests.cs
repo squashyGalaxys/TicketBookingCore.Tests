@@ -6,32 +6,26 @@ namespace TicketBookingCore.Tests
     {
         private readonly Mock<ITicketBookingRepository> _ticketBookingRepositoryMock;
         private readonly TicketBookingRequestProcessor _processor;
+        private readonly TicketBookingRequest _request;
+        
         public TicketBookingRequestProcessorTests()
         {
             _ticketBookingRepositoryMock = new Mock<ITicketBookingRepository>();
             _processor = new TicketBookingRequestProcessor(_ticketBookingRepositoryMock.Object);
+            _request = new TicketBookingRequest();
         }
 
         [Fact]
         public void ShouldReturnTicketBookningResultWithRequestValues()
         {
-            // Arrange
-
-            var request = new TicketBookingRequest
-            {
-                FirstName = "Nevena",
-                LastName = "Kicanovic",
-                Email = "nevena@gmail.com"
-            };
-
+           
             // Act
-            TicketBookingResponse response = _processor.Book(request);
-
+            TicketBookingResponse response = _processor.Book(_request);
             // Assert
             Assert.NotNull(response);
-            Assert.Equal(request.FirstName, response.FirstName);
-            Assert.Equal(request.LastName, response.LastName);
-            Assert.Equal(request.Email, response.Email);
+            Assert.Equal(response.FirstName, _request.FirstName);
+            Assert.Equal(response.LastName, _request.LastName);
+            Assert.Equal(response.Email, _request.Email);
         }
         [Fact]
         public void ShouldThrowExceptionIfRequestIsNull()
@@ -59,21 +53,16 @@ namespace TicketBookingCore.Tests
                 savedTicketBooking = ticketBooking;
             });
 
-            var request = new TicketBookingRequest
-            {
-                FirstName = "Milena",
-                LastName = "Avramovic",
-                Email = "milenaavramovic@gmail.com"
-            };
+           
 
             // Act
-            TicketBookingResponse response = _processor.Book(request);
+            TicketBookingResponse response = _processor.Book(_request);
 
             // Assert
             Assert.NotNull(savedTicketBooking);
-            Assert.Equal(request.FirstName, savedTicketBooking.FirstName);
-            Assert.Equal(request.LastName, savedTicketBooking.LastName);
-            Assert.Equal(request.Email, savedTicketBooking.Email);
+            Assert.Equal(response.FirstName, savedTicketBooking.FirstName);
+            Assert.Equal(response.LastName, savedTicketBooking.LastName);
+            Assert.Equal(response.Email, savedTicketBooking.Email);
         }
     }
 }
