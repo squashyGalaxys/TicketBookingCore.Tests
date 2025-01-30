@@ -8,6 +8,6 @@ namespace TicketBookingCore
 {
     public class TicketBookingRepository : TicketBookingResponse
     {
-
+        
     }
 }
